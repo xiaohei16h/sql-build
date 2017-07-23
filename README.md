@@ -1,11 +1,10 @@
 ### sql-build
-
-    sql-build是一个支持条件控制的go语言sql拼接库.共分为4个部分,select,insert,update和delete四个部分,生成的结果为完整sql语句,需要和beego,xorm以及其它支持原生sql语句的orm配置使用,sql-build只做拼接工作.
+sql-build是一个支持条件控制的go语言sql拼接库.共分为4个部分,select,insert,update和delete四个部分,生成的结果为完整sql语句,需要和beego,xorm以及其它支持原生sql语句的orm配置使用,sql-build只做拼接工作.
+    
 主要功能有
 - 无序的链式拼接
 - 支持string类型的值注入检测
 - 支持自定控制条件
-- 
     
 需要注意的是:
 - 目前只支持单表操作,不支持联表
@@ -14,7 +13,7 @@
 
 ### 使用说明
 
-#### select
+### select
 select方法可以支持以下函数,除了Select和String函数放在语句的头尾处,其余的都可以无序设置
 - Select(table string) SelectInf
 - Column(column string) SelectInf
@@ -29,7 +28,7 @@ select方法可以支持以下函数,除了Select和String函数放在语句的�
 - GroupBy(groupBy string) SelectInf
 - String() (string, error)
 
-##### String 最后一步生成sql的函数
+##### String 生成sql的函数
 ```go
 import (
 	"testing"
@@ -75,7 +74,7 @@ sql打印
 ```go
 SELECT aaa,bbb as xx FROM myTab
 ```
-空的数据不予以打印
+空的数据不予组装
 
 ##### Where条件控制语句
 ```go
