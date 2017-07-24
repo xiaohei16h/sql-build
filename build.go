@@ -6,11 +6,11 @@ package sqlBuild
 //	return auto
 //}
 
-func Insert(table string) (*SqlBuilder) {
-	auto := new(SqlBuilder)
-	auto.Insert(table)
-	return auto
-}
+//func Insert(table string) (*SqlBuilder) {
+//	auto := new(SqlBuilder)
+//	auto.Insert(table)
+//	return auto
+//}
 func Update(table string) (*SqlBuilder) {
 	auto := new(SqlBuilder)
 	auto.Update(table)

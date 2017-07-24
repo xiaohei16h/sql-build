@@ -6,14 +6,14 @@ import (
 )
 
 func TestInsert(t *testing.T) {
-	sql := sqlBuild.Insert("tabName").
-		Value(0, "uid").
-		Value("", "site_id")
-	t.Log(sql.String())
-	sql2 := sqlBuild.Insert("tabName").
-		Value_(0, "uid").
-		Value_("", "site_id")
-	t.Log(sql2.String())
+	//sql := sqlBuild.Insert("tabName").
+	//	Value(0, "uid").
+	//	Value("", "site_id")
+	//t.Log(sql.String())
+	//sql2 := sqlBuild.Insert("tabName").
+	//	Value_(0, "uid").
+	//	Value_("", "site_id")
+	//t.Log(sql2.String())
 
 }
 func TestUpdate(t *testing.T) {

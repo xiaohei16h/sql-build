@@ -17,8 +17,9 @@ type SelectInf interface {
 
 type InsertInf interface {
 	Insert(table string) InsertInf
-	Value(value interface{}, key string) InsertInf
-	Value_(value interface{}, key string) InsertInf
+	Value(value interface{}, rules ... Rule) InsertInf
+	Values(value interface{}, rules ... Rule) InsertInf
+	String() (string, error)
 }
 
 type UpdateInf interface {

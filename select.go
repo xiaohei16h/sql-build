@@ -64,13 +64,9 @@ func (s *SelectBuild) GroupBy(groupBy string) SelectInf {
 	return s
 }
 func (s *SelectBuild) String() (string, error) {
-	if s.injection {
-		return "", ErrInjection
-	}
 	if s.err != nil {
 		return "", s.err
 	}
-	var sql string
 	//table
 	if s.tableName == "" {
 		return "", ErrTabName
@@ -147,7 +143,7 @@ func (s *SelectBuild) String() (string, error) {
 	if len(wheres) > 0 {
 		lastWhere = " WHERE " + strings.Join(wheres, " and ")
 	}
-	sql = "SELECT" + column + " FROM " + s.tableName + lastWhere + groupBy + orderBy + limits
+	sql := "SELECT" + column + " FROM " + s.tableName + lastWhere + groupBy + orderBy + limits
 	debug.Println("sql:" + sql)
 	return sql, nil
 }
