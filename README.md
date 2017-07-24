@@ -13,7 +13,7 @@ sql-build是一个支持条件控制的go语言sql拼接库.共分为4个部分,
 
 ### 使用说明
 
-### select
+### *select*
 select方法可以支持以下函数,除了Select和String函数放在语句的头尾处,其余的都可以无序设置
 - Select(table string) SelectInf
 - Column(column string) SelectInf
@@ -429,3 +429,62 @@ err输出:
 Injection err
 ```
 检查出string类型的值里面包含注入的关键字
+
+### *insert*
+
+insert方法支持以下函数
+
+- Insert(table string) InsertInf
+- Value(value interface{}, rules ... Rule) InsertInf
+- Values(value interface{}, rules ... Rule) InsertInf
+- String() (string, error)
+
+> 注意:insert方法因为需要在insert的方法上面加上insert的tag,value和values方法不可以同时使用
+
+##### value
+
+```go
+type Tab struct {
+	Id   int `insert:"id"`
+	Name string `insert:"name"`
+	Age  int `insert:"age"`
+}
+
+func TestValue(t *testing.T) {
+	var tab = Tab{Id: 0, Name: "yiersan", Age: 18}
+	sql, err := sqlBuild.Insert("xx").
+		Value(&tab).String()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(sql)
+}
+```
+首先,给`filed`加上`insert`的tag,然后调用value,传入指针,同`select`一样,value方法也可以自定义规则传入使用.
+sql打印:
+```go
+INSERT INTO xx(id,name,age) VALUES (DEFAULT,'yiersan',18)
+```
+
+##### values 批量插入
+
+```go
+func TestValues(t *testing.T) {
+	var tab1 = Tab{Id: 0, Name: "yiersan", Age: 18}
+	var tab2 = Tab{Id: 0, Name: "xx", Age: 16}
+	var tab3 = Tab{Id: 0, Name: "pp", Age: 18}
+	var tabs = []Tab{tab1, tab2, tab3}
+	sql, err := sqlBuild.Insert("xx").
+		Values(tabs).String()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(sql)
+}
+```
+sql打印:
+```go
+INSERT INTO xx(id,name,age) VALUES (DEFAULT,'pp',18),(DEFAULT,'xx',16),(DEFAULT,'yiersan',18)
+```
+
+
