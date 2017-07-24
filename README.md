@@ -12,6 +12,12 @@ sql-build是一个支持条件控制的go语言sql拼接库.共分为4个部分,
 - 可能缺少一些sql关键字,如果有需要,可以pull request
 
 ### 使用说明
+````go
+import (
+	"github.com/golyu/sql-build/debug"
+)
+sqlBuild.Debug() //开启debug模式,可以看到错误和警告的打印
+````
 
 ### *select*
 select方法可以支持以下函数,除了Select和String函数放在语句的头尾处,其余的都可以无序设置
@@ -509,5 +515,26 @@ sql打印:
 ```go
 INSERT INTO xx(id,name,age) VALUES (DEFAULT,'xx',16),(DEFAULT,'yiersan',18),(DEFAULT,'pp',18)  ON DUPLICATE KEY UPDATE id = values(id),name = values(name),age = values(age)
 ```
+#### Delete
+delete方法支持以下函数
+
+- Delete(table string) DeleteInf
+- Where(value interface{}, key string, rules ... Rule) DeleteInf
+- Where_(value interface{}, key string, rules ... Rule) DeleteInf
+- Like(value string, key string) DeleteInf
+- In(values interface{}, key string) DeleteInf
+- NotIn(values interface{}, key string) DeleteInf
+- OrderBy(orderBy string) DeleteInf
+- Limit(limit int) DeleteInf
+- Offset(offset int) DeleteInf
+- GroupBy(groupBy string) DeleteInf
+- String() (string, error)
+
+`delete`方法基本支持`select`方法的所有函数和用法,`column`除外
+
+#### Update
+
+
+
 
 

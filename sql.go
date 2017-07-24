@@ -1,5 +1,9 @@
 package sqlBuild
 
+import (
+	"github.com/golyu/sql-build/debug"
+)
+
 type SelectInf interface {
 	Select(table string) SelectInf
 	Column(column string) SelectInf
@@ -19,15 +23,16 @@ type InsertInf interface {
 	Insert(table string) InsertInf
 	Value(value interface{}, rules ... Rule) InsertInf
 	Values(value interface{}, rules ... Rule) InsertInf
-	OrUpdate()InsertInf
+	OrUpdate() InsertInf
 	String() (string, error)
 }
 
 type UpdateInf interface {
 	Update(table string) UpdateInf
-	Column(column string) UpdateInf
-	Where(value interface{}, key string) UpdateInf
-	Where_(value interface{}, key string) UpdateInf
+	Where(value interface{}, key string, rules ... Rule) UpdateInf
+	Where_(value interface{}, key string, rules ... Rule) UpdateInf
+	Set(value interface{}, key string, rules ... Rule) UpdateInf
+	Set_(value interface{}, key string, rules ... Rule) UpdateInf
 	Like(value string, key string) UpdateInf
 	In(values interface{}, key string) UpdateInf
 	NotIn(values interface{}, key string) UpdateInf
@@ -40,9 +45,8 @@ type UpdateInf interface {
 
 type DeleteInf interface {
 	Delete(table string) DeleteInf
-	Column(column string) DeleteInf
-	Where(value interface{}, key string) DeleteInf
-	Where_(value interface{}, key string) DeleteInf
+	Where(value interface{}, key string, rules ... Rule) DeleteInf
+	Where_(value interface{}, key string, rules ... Rule) DeleteInf
 	Like(value string, key string) DeleteInf
 	In(values interface{}, key string) DeleteInf
 	NotIn(values interface{}, key string) DeleteInf
@@ -51,4 +55,12 @@ type DeleteInf interface {
 	Offset(offset int) DeleteInf
 	GroupBy(groupBy string) DeleteInf
 	String() (string, error)
+}
+
+func Debug(deb ...bool) {
+	d := true
+	if len(deb) > 0 {
+		d = deb[0]
+	}
+	debug.Debug = d
 }

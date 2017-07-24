@@ -11,16 +11,16 @@ package sqlBuild
 //	auto.Insert(table)
 //	return auto
 //}
-func Update(table string) (*SqlBuilder) {
-	auto := new(SqlBuilder)
-	auto.Update(table)
-	return auto
-}
-func Delete(table string) (*SqlBuilder) {
-	auto := new(SqlBuilder)
-	auto.Delete(table)
-	return auto
-}
+//func Update(table string) (*SqlBuilder) {
+//	auto := new(SqlBuilder)
+//	auto.Update(table)
+//	return auto
+//}
+//func Delete(table string) (*SqlBuilder) {
+//	auto := new(SqlBuilder)
+//	auto.Delete(table)
+//	return auto
+//}
 
 
 
