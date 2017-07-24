@@ -19,6 +19,7 @@ type InsertInf interface {
 	Insert(table string) InsertInf
 	Value(value interface{}, rules ... Rule) InsertInf
 	Values(value interface{}, rules ... Rule) InsertInf
+	OrUpdate()InsertInf
 	String() (string, error)
 }
 

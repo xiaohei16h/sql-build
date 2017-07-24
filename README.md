@@ -437,6 +437,7 @@ insert方法支持以下函数
 - Insert(table string) InsertInf
 - Value(value interface{}, rules ... Rule) InsertInf
 - Values(value interface{}, rules ... Rule) InsertInf
+- OrUpdate()InsertInf
 - String() (string, error)
 
 > 注意:insert方法因为需要在insert的方法上面加上insert的tag,value和values方法不可以同时使用
@@ -465,7 +466,6 @@ sql打印:
 ```go
 INSERT INTO xx(id,name,age) VALUES (DEFAULT,'yiersan',18)
 ```
-
 ##### values 批量插入
 
 ```go
@@ -485,6 +485,29 @@ func TestValues(t *testing.T) {
 sql打印:
 ```go
 INSERT INTO xx(id,name,age) VALUES (DEFAULT,'pp',18),(DEFAULT,'xx',16),(DEFAULT,'yiersan',18)
+```
+这里的批量插入在源码中发射是异步了的,所以插入多条和插入单条,理论时间大致是一样的
+
+##### OrUpdate 不存在就插入,存在就更新
+```go
+func TestOrUpdate(t *testing.T) {
+	var tab1 = Tab{Id: 0, Name: "yiersan", Age: 18}
+	var tab2 = Tab{Id: 0, Name: "xx", Age: 16}
+	var tab3 = Tab{Id: 0, Name: "pp", Age: 18}
+	var tabs = []Tab{tab1, tab2, tab3}
+	sql, err := sqlBuild.Insert("xx").
+		Values(tabs).
+		OrUpdate().
+		String()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(sql)
+}
+```
+sql打印:
+```go
+INSERT INTO xx(id,name,age) VALUES (DEFAULT,'xx',16),(DEFAULT,'yiersan',18),(DEFAULT,'pp',18)  ON DUPLICATE KEY UPDATE id = values(id),name = values(name),age = values(age)
 ```
 
 

@@ -57,6 +57,11 @@ func (i *InsertBuild) Values(value interface{}, rules ... Rule) InsertInf {
 	return i
 }
 
+func (i *InsertBuild) OrUpdate() InsertInf {
+	i.isOrUpdate = true
+	return i
+}
+
 func (i *InsertBuild) String() (string, error) {
 	if i.err != nil {
 		return "", i.err
@@ -83,7 +88,18 @@ func (i *InsertBuild) String() (string, error) {
 	if insertValue == "" {
 		return "", ErrInsertValue
 	}
-	sql := "INSERT INTO " + i.tableName + "(" + insertColumn + ") VALUES (" + insertValue + ")"
+	//orupdate
+	var orUpdate string
+	if i.isOrUpdate {
+		var orUpdates []string
+		for _, v := range i.insertColumns {
+			temp := strings.Join([]string{v, v}, " = values(")
+			orUpdates = append(orUpdates, temp)
+		}
+		orUpdate = " ON DUPLICATE KEY UPDATE " + strings.Join(orUpdates, "),") + ")"
+	}
+
+	sql := "INSERT INTO " + i.tableName + "(" + insertColumn + ") VALUES (" + insertValue + ") " + orUpdate
 	debug.Println("sql:" + sql)
 	return sql, nil
 }

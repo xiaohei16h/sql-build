@@ -34,6 +34,7 @@ type BuildCore struct {
 	insertColumns     []string
 	insertTags        []int
 	insertValues      []string
+	isOrUpdate        bool
 	insertValuesMutex sync.Mutex
 
 	err error
@@ -203,8 +204,6 @@ func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule) {
 	}
 }
 
-
-
 //func ( *BuildCore) getStrings(inValues interface{}) (strs []string, err error) {
 //	switch values := inValues.(type) {
 //	case []int:
@@ -353,8 +352,8 @@ func (b *BuildCore) setValueColumns(ty reflect.Type, tag string) {
 	}
 }
 
-func (b *BuildCore) value(ind reflect.Value, rule Rule, wg... *sync.WaitGroup) {
-	if len(wg)>0{
+func (b *BuildCore) value(ind reflect.Value, rule Rule, wg ... *sync.WaitGroup) {
+	if len(wg) > 0 {
 		defer wg[0].Done()
 	}
 	if b.err != nil {
