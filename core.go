@@ -12,7 +12,9 @@ var (
 	ErrTabName      = errors.New("The tabName can not be empty")
 	ErrValueType    = errors.New("The Value not have need type")
 	ErrInjection    = errors.New("Injection err")
+	ErrNoUpdate     = errors.New("Not Found Update Data")
 	ErrCondition    = errors.New("Fail to meet the condition")
+	ErrSet          = errors.New("Fail to meet the set")
 	ErrNoLimit      = errors.New("Need 'Offset' and 'Limit' are used together")
 	ErrInsertColumn = errors.New("Not found Insert Column")
 	ErrInsertValue  = errors.New("Not found Insert Data")
@@ -20,8 +22,9 @@ var (
 
 type BuildCore struct {
 	tableName     string
-	columnValues  []string
-	whereValues   []string
+	columnValues  []string //查询列
+	whereValues   []string //条件值
+	setValues     []string //修改值
 	orderValues   []string
 	limitValue    int
 	offsetValue   int
@@ -166,10 +169,10 @@ func (b *BuildCore) where(whereValue interface{}, key string, rule Rule) {
 		return
 	}
 	if key == "" {
-		debug.Println("The WhereKey can not be empty")
+		debug.Println("The 'WhereKey' can not be empty")
 		return
 	}
-	value, err := GetWhereValues(whereValue, rule)
+	value, err := GetWhereSetValues(whereValue, rule)
 	if err != nil {
 		b.err = err
 		return
@@ -181,6 +184,7 @@ func (b *BuildCore) where(whereValue interface{}, key string, rule Rule) {
 		b.whereValues = append(b.whereValues, key+value)
 	}
 }
+
 func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule) {
 	if b.err != nil {
 		return
@@ -189,7 +193,7 @@ func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule) {
 		debug.Println("The WhereKey can not be empty")
 		return
 	}
-	value, err := GetWhereValues(whereValue, rule)
+	value, err := GetWhereSetValues(whereValue, rule)
 	if err != nil {
 		b.err = err
 		return
@@ -204,107 +208,42 @@ func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule) {
 	}
 }
 
-//func ( *BuildCore) getStrings(inValues interface{}) (strs []string, err error) {
-//	switch values := inValues.(type) {
-//	case []int:
-//		for _, v := range []int(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []int8:
-//		for _, v := range []int8(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []int16:
-//		for _, v := range []int16(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []int32:
-//		for _, v := range []int32(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []int64:
-//		for _, v := range []int64(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []uint:
-//		for _, v := range []uint(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []uint8:
-//		for _, v := range []uint8(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []uint16:
-//		for _, v := range []uint16(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []uint32:
-//		for _, v := range []uint32(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []uint64:
-//		for _, v := range []uint64(values) {
-//			str := fmt.Sprintf("%d", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []float64:
-//		for _, v := range []float64(values) {
-//			str := fmt.Sprintf("%g", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []float32:
-//		for _, v := range []float32(values) {
-//			str := fmt.Sprintf("%g", v)
-//			if str != "" {
-//				strs = append(strs, str)
-//			}
-//		}
-//	case []string:
-//		for _, v := range []string(values) {
-//			if v != "" {
-//				if CheckInjection(v) {
-//					err = ErrInjection
-//					return
-//				}
-//				strs = append(strs, strings.Join([]string{"'", "'"}, v))
-//			}
-//		}
-//	default:
-//		err = ErrValueType
-//	}
-//	return
-//}
+func (b *BuildCore) set(setValue interface{}, key string, rule Rule) {
+	if b.err != nil {
+		return
+	}
+	if key == "" {
+		debug.Println("The 'SetKey' can not be empty")
+		return
+	}
+	value, err := GetWhereSetValues(setValue, rule)
+	if err != nil {
+		b.err = err
+		return
+	}
+	if value != "" && value != "''" {
+		b.setValues = append(b.setValues, key+" = "+value)
+	}
+}
+func (b *BuildCore) set_(setValue interface{}, key string, rule Rule) {
+	if b.err != nil {
+		return
+	}
+	if key == "" {
+		debug.Println("The 'SetKey' can not be empty")
+		return
+	}
+	value, err := GetWhereSetValues(setValue, rule)
+	if err != nil {
+		b.err = err
+		return
+	}
+	if value != "" && value != "''" {
+		b.setValues = append(b.setValues, key+" = "+value)
+	} else {
+		b.err = ErrSet
+	}
+}
 
 func (b *BuildCore) limit(limitValue int) {
 	if b.err != nil {
@@ -359,8 +298,6 @@ func (b *BuildCore) value(ind reflect.Value, rule Rule, wg ... *sync.WaitGroup) 
 	if b.err != nil {
 		return
 	}
-	//val := reflect.ValueOf(in)
-	//ind := val.Elem()
 	var values []string
 	for _, v := range b.insertTags {
 		value, err := GetValue(ind.Field(v), rule)

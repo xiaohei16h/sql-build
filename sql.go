@@ -29,10 +29,10 @@ type InsertInf interface {
 
 type UpdateInf interface {
 	Update(table string) UpdateInf
-	Where(value interface{}, key string, rules ... Rule) UpdateInf
-	Where_(value interface{}, key string, rules ... Rule) UpdateInf
 	Set(value interface{}, key string, rules ... Rule) UpdateInf
 	Set_(value interface{}, key string, rules ... Rule) UpdateInf
+	Where(value interface{}, key string, rules ... Rule) UpdateInf
+	Where_(value interface{}, key string, rules ... Rule) UpdateInf
 	Like(value string, key string) UpdateInf
 	In(values interface{}, key string) UpdateInf
 	NotIn(values interface{}, key string) UpdateInf

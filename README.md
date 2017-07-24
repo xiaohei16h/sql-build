@@ -20,7 +20,7 @@ sqlBuild.Debug() //开启debug模式,可以看到错误和警告的打印
 ````
 
 ### *select*
-select方法可以支持以下函数,除了Select和String函数放在语句的头尾处,其余的都可以无序设置
+select功能可以支持以下函数,除了Select和String函数放在语句的头尾处,其余的都可以无序设置
 - Select(table string) SelectInf
 - Column(column string) SelectInf
 - Where(value interface{}, key string, rules ... Rule) SelectInf
@@ -438,7 +438,7 @@ Injection err
 
 ### *insert*
 
-insert方法支持以下函数
+insert功能支持以下函数
 
 - Insert(table string) InsertInf
 - Value(value interface{}, rules ... Rule) InsertInf
@@ -516,7 +516,7 @@ sql打印:
 INSERT INTO xx(id,name,age) VALUES (DEFAULT,'xx',16),(DEFAULT,'yiersan',18),(DEFAULT,'pp',18)  ON DUPLICATE KEY UPDATE id = values(id),name = values(name),age = values(age)
 ```
 #### Delete
-delete方法支持以下函数
+delete功能支持以下函数
 
 - Delete(table string) DeleteInf
 - Where(value interface{}, key string, rules ... Rule) DeleteInf
@@ -530,9 +530,86 @@ delete方法支持以下函数
 - GroupBy(groupBy string) DeleteInf
 - String() (string, error)
 
-`delete`方法基本支持`select`方法的所有函数和用法,`column`除外
+`delete`功能基本支持`select`功能的所有函数和用法,`column`除外
+我们还是写一个例子
+```go
+func TestDeleteAll(t *testing.T) {
+	sql, err := sqlBuild.Delete("myTab").
+		Where("一班", "class").
+		Where(0, "age>").
+		Where("c", "").
+		Where_("男", "sex").
+		In([]string{"语文", "数学"}, "hobby").
+		NotIn([]int{6, 7}, "xx").
+		GroupBy("xxx").
+		GroupBy("xxxx").
+		OrderBy("-id").
+		Limit(10).
+		Offset(2).String()
+	if err != nil {
+		t.Error(err.Error())
+		err = nil
+	}
+	t.Log(sql)
+}	
+```
+sql打印:
+```go
+DELETE FROM myTab WHERE class = '一班' and sex = '男' and hobby IN ('语文','数学') and xx NOT IN (6,7) GROUP BY xxx,xxxx ORDER BY -id LIMIT 10 OFFSET 2
+```
+可能delete主要用到的也只有`Where`,`Where_`,`In`,`NotIn`功能的,其它的有些鸡肋,不过既然sql支持的,我们也就尽量支持,至少提供一个可选项
 
 #### Update
+
+`update`功能也是在`select`功能基础上改造,去掉了`column`,添加了`set`和`set_`函数
+
+- Update(table string) UpdateInf
+- Set(value interface{}, key string, rules ... Rule) UpdateInf
+- Set_(value interface{}, key string, rules ... Rule) UpdateInf
+- Where(value interface{}, key string, rules ... Rule) UpdateInf
+- Where_(value interface{}, key string, rules ... Rule) UpdateInf
+- Like(value string, key string) UpdateInf
+- In(values interface{}, key string) UpdateInf
+- NotIn(values interface{}, key string) UpdateInf
+- OrderBy(orderBy string) UpdateInf
+- Limit(limit int) UpdateInf
+- Offset(offset int) UpdateInf
+- GroupBy(groupBy string) UpdateInf
+- String() (string, error)
+
+同样,我们也写个示例
+```go
+func TestUpdateWhere(t *testing.T) {
+    sql, err := sqlBuild.Update("myTab").
+		Set("二中", "school").
+		Where("nameValue", "name").String()
+	if err != nil {
+    		t.Error(err.Error())
+    		err = nil
+    	}
+    	t.Log(sql)
+    sql, err = sqlBuild.Update("myTab").
+    		Set_("", "school").
+    		Where("nameValue", "name").
+    		Where(12, "age > ").String()
+    	if err != nil {
+    		t.Error(err.Error())
+    		err = nil
+    	}
+    	t.Log(sql)
+}
+```
+sql打印:
+```go
+UPDATE myTab SET school = '二中' WHERE name = 'nameValue'
+```
+错误打印:
+```go
+Fail to meet the set
+```
+`set_`,`where_`,这种后面带下划线的都表强制,如果不符合过滤条件,就会返回错误,而不带下划线的`set`,`where`都是跳过不合条件的数据
+
+> 以上的详细示例都可以在`test`文件夹下的测试文件中
 
 
 

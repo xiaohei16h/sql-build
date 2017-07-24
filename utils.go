@@ -124,7 +124,7 @@ func GetInValues(inValues interface{}) (strs []string, err error) {
 	return
 }
 
-func GetWhereValues(values interface{}, rule Rule) (value string,
+func GetWhereSetValues(values interface{}, rule Rule) (value string,
 	err error) {
 	switch value := values.(type) {
 	case int:

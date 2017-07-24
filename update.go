@@ -6,64 +6,75 @@ import (
 	"github.com/golyu/sql-build/debug"
 )
 
-type SelectBuild struct {
+type UpdateBuild struct {
 	BuildCore
 }
 
-func (s *SelectBuild) Select(table string) SelectInf {
-	s.setTabName(table)
-	return s
+func (u *UpdateBuild) Update(table string) UpdateInf {
+	u.setTabName(table)
+	return u
 }
-
-func (s *SelectBuild) Column(column string) SelectInf {
-	s.column(column)
-	return s
-}
-func (s *SelectBuild) Where(value interface{}, key string, rules ... Rule) SelectInf {
+func (u *UpdateBuild) Set(value interface{}, key string, rules ... Rule) UpdateInf {
 	var rule Rule
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	s.where(value, key, rule)
-	return s
+	u.set(value, key, rule)
+	return u
 }
-func (s *SelectBuild) Where_(value interface{}, key string, rules ... Rule) SelectInf {
+func (u *UpdateBuild) Set_(value interface{}, key string, rules ... Rule) UpdateInf {
 	var rule Rule
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	s.where_(value, key, rule)
-	return s
+	u.set_(value, key, rule)
+	return u
 }
-func (s *SelectBuild) Like(value string, key string) SelectInf {
-	s.like(value, key)
-	return s
+func (u *UpdateBuild) Where(value interface{}, key string, rules ... Rule) UpdateInf {
+	var rule Rule
+	if len(rules) > 0 {
+		rule = rules[0]
+	}
+	u.where(value, key, rule)
+	return u
 }
-func (s *SelectBuild) In(values interface{}, key string) SelectInf {
-	s.in(values, key)
-	return s
+func (u *UpdateBuild) Where_(value interface{}, key string, rules ... Rule) UpdateInf {
+	var rule Rule
+	if len(rules) > 0 {
+		rule = rules[0]
+	}
+	u.where_(value, key, rule)
+	return u
 }
-func (s *SelectBuild) NotIn(values interface{}, key string) SelectInf {
-	s.notin(values, key)
-	return s
+func (u *UpdateBuild) Like(value string, key string) UpdateInf {
+	u.like(value, key)
+	return u
 }
-func (s *SelectBuild) OrderBy(orderBy string) SelectInf {
-	s.orderBy(orderBy)
-	return s
+func (u *UpdateBuild) In(values interface{}, key string) UpdateInf {
+	u.in(values, key)
+	return u
 }
-func (s *SelectBuild) Limit(limit int) SelectInf {
-	s.limit(limit)
-	return s
+func (u *UpdateBuild) NotIn(values interface{}, key string) UpdateInf {
+	u.notin(values, key)
+	return u
 }
-func (s *SelectBuild) Offset(offset int) SelectInf {
-	s.offset(offset)
-	return s
+func (u *UpdateBuild) OrderBy(orderBy string) UpdateInf {
+	u.orderBy(orderBy)
+	return u
 }
-func (s *SelectBuild) GroupBy(groupBy string) SelectInf {
-	s.groupBy(groupBy)
-	return s
+func (u *UpdateBuild) Limit(limit int) UpdateInf {
+	u.limit(limit)
+	return u
 }
-func (s *SelectBuild) String() (string, error) {
+func (u *UpdateBuild) Offset(offset int) UpdateInf {
+	u.offset(offset)
+	return u
+}
+func (u *UpdateBuild) GroupBy(groupBy string) UpdateInf {
+	u.groupBy(groupBy)
+	return u
+}
+func (s *UpdateBuild) String() (string, error) {
 	if s.err != nil {
 		return "", s.err
 	}
@@ -71,13 +82,14 @@ func (s *SelectBuild) String() (string, error) {
 	if s.tableName == "" {
 		return "", ErrTabName
 	}
-	//column
-	var column string
-	if len(s.columnValues) == 0 {
-		column = " *"
-	} else {
-		column = " "+strings.Join(s.columnValues, ",")
+	//set
+	var set string
+	if len(s.setValues) > 0 {
+		set = " SET " + strings.Join(s.setValues, ",")
+	}else {
+		return "",ErrNoUpdate
 	}
+
 	//where
 	var where string
 	if len(s.whereValues) > 0 {
@@ -102,7 +114,6 @@ func (s *SelectBuild) String() (string, error) {
 	if len(s.likeValues) > 0 {
 		like = strings.Join(s.likeValues, " and ")
 	}
-
 	//groupby
 	var groupBy string
 	if len(s.groupByValues) > 0 {
@@ -116,9 +127,6 @@ func (s *SelectBuild) String() (string, error) {
 	//limit offset
 	var limits string
 	if s.limitValue > 0 {
-		if strings.Contains(strings.ToLower(column), "count(") {
-			debug.Warning("'count' and 'limit'  cannot exist at the same time")
-		}
 		limits = " LIMIT " + strconv.Itoa(s.limitValue)
 		if s.offsetValue > 0 {
 			limits += " OFFSET " + strconv.Itoa(s.offsetValue)
@@ -126,6 +134,7 @@ func (s *SelectBuild) String() (string, error) {
 	} else if s.offsetValue > 0 {
 		return "", ErrNoLimit
 	}
+
 	var wheres []string
 	if where != "" {
 		wheres = append(wheres, where)
@@ -143,13 +152,13 @@ func (s *SelectBuild) String() (string, error) {
 	if len(wheres) > 0 {
 		lastWhere = " WHERE " + strings.Join(wheres, " and ")
 	}
-	sql := "SELECT" + column + " FROM " + s.tableName + lastWhere + groupBy + orderBy + limits
+	sql := "UPDATE " + s.tableName + set + lastWhere + groupBy + orderBy + limits
 	debug.Println("sql:" + sql)
 	return sql, nil
 }
 
-func Select(table string) SelectInf {
-	auto := new(SelectBuild)
-	auto.Select(table)
+func Update(table string) UpdateInf {
+	auto := new(UpdateBuild)
+	auto.Update(table)
 	return auto
 }
