@@ -177,7 +177,7 @@ func (b *BuildCore) where(whereValue interface{}, key string, rule Rule) {
 		b.err = err
 		return
 	}
-	if value != "" && value != "''" {
+	if value != rule.StringValue && value != strings.Join([]string{"'","'"},rule.StringValue) {
 		if !strings.ContainsAny(key, ">=<") {
 			key += " = "
 		}
@@ -198,7 +198,7 @@ func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule) {
 		b.err = err
 		return
 	}
-	if value != "" && value != "''" {
+	if value != rule.StringValue && value != strings.Join([]string{"'","'"},rule.StringValue) {
 		if !strings.ContainsAny(key, ">=<") {
 			key += " = "
 		}
@@ -221,7 +221,7 @@ func (b *BuildCore) set(setValue interface{}, key string, rule Rule) {
 		b.err = err
 		return
 	}
-	if value != "" && value != "''" {
+	if value != rule.StringValue && value != strings.Join([]string{"'","'"},rule.StringValue) {
 		b.setValues = append(b.setValues, key+" = "+value)
 	}
 }
@@ -238,7 +238,7 @@ func (b *BuildCore) set_(setValue interface{}, key string, rule Rule) {
 		b.err = err
 		return
 	}
-	if value != "" && value != "''" {
+	if value != rule.StringValue && value != strings.Join([]string{"'","'"},rule.StringValue){
 		b.setValues = append(b.setValues, key+" = "+value)
 	} else {
 		b.err = ErrSet
