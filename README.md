@@ -691,7 +691,28 @@ UPDATE myTab SET school = '二中' WHERE name = 'nameValue'
 ```go
 Fail to meet the set
 ```
+有个朋友问了个问题,可能是我的说明没写清楚,问题是这样的,确实需要把一个值`update`成空字符串,怎么办呢,
+如果只是少量语句需要这样,可以使用以下的方法,局部条件过滤,只要设置的值不是`*****`,就不会报`Fail to meet the set`错误
+```go
+func TestSetEmpty(t *testing.T) {
+	sql, err := sqlBuild.Update("myTable").
+		Where_("123", "id").
+		Set_("", "name", sqlBuild.Rule{StringValue: "*****"}).
+		String()
+	if err != nil {
+		t.Error(err.Error())
+	}
+	t.Log(sql)
+}
+
+```
+sql打印
+```go
+UPDATE myTable SET name = '' WHERE id = '123'
+```
+
 `set_`,`where_`,这种后面带下划线的都表强制,如果不符合过滤条件,就会返回错误,而不带下划线的`set`,`where`都是跳过不合条件的数据
+
 
 > 以上的详细示例都可以在`test`文件夹下的测试文件中找到
 

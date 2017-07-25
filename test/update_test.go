@@ -301,3 +301,14 @@ func TestUpdateAll(t *testing.T) {
 	}
 	t.Log(sql)
 }
+
+func TestSetEmpty(t *testing.T) {
+	sql, err := sqlBuild.Update("myTable").
+		Where_("123", "id").
+		Set_("", "name", sqlBuild.Rule{StringValue: "*****"}).
+		String()
+	if err != nil {
+		t.Error(err.Error())
+	}
+	t.Log(sql)
+}
