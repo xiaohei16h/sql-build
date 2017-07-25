@@ -4,12 +4,96 @@ sql-build是一个支持条件控制的go语言sql拼接库.共分为4个部分,
 主要功能有
 - 无序的链式拼接
 - 支持string类型的值注入检测
-- 通过条件控制,决定数据有效性
+- 通过条件控制,决定数据有效性 (可以自定条件,用户可以自定义自己的规则,来组合`sql-build`,这个可以参考[sql-build-example](https://github.com/golyu/sql-build-example)项目中`models/build`目录中的写法,进行组合设置)
+- 不支持sql预编译(这个既是优点也是缺点,优点是,可以在不支持预编译语句的sql中间件上使用,缺点就是预编译的优点)
     
 需要注意的是:
 - 目前只支持单表操作,不支持联表
 - 参数的值在前,列名在后(这个用起来有点别扭,主要是为了使用idea的template)
 - 可能缺少一些sql关键字,如果有需要,可以pull request
+- 不支持sql预编译
+### 解决的痛点
+如果的models中,我们组合sql的时候,还需要判断一些参数是否存在,我们使用拼接库是这样的:
+```go
+func UpdateUser(id int, username, sex, name string, state int, money float64, qq, email string) error {
+	if id > 0 {
+		set := ""
+		if len(username) > 0 {
+			set += " name = '" + username + "'"
+		}
+		if len(sex) > 0 {
+			if len(set) > 0 {
+				set += ","
+			}
+			set += " sex = '" + sex + "'"
+		}
+		if len(name) > 0 {
+			if len(set) > 0 {
+				set += ","
+			}
+			set += " name = '" + name + "'"
+		}
+		if state > 0 {
+			if len(set) > 0 {
+				set += ","
+			}
+			set += " state = " + strconv.Itoa(state)
+		}
+		if money > 0 {
+			if len(set) > 0 {
+				set += ","
+			}
+			set += " money = " + fmt.Sprintf("%g",money)
+		}
+		if len(qq) > 0 {
+			if len(set) > 0 {
+				set += ","
+			}
+			set += " qq = '" + qq + "'"
+		}
+		if len(email) > 0 {
+			if len(set) > 0 {
+				set += ","
+			}
+			set += " email = '" + email + "'"
+		}
+		if len(set) > 0 {
+			set = " SET" + set
+		} else {
+			return errors.New("not need update column")
+		}
+		sql := fmt.Sprintf("UPDATE user "+set+" WHERE id = %d",
+			id)
+		o:=orm.NewOrm()
+		_, err := o.Raw(sql).Exec()
+		return err
+	}
+	return errors.New("Id can not <=0")
+}
+```
+每一步一个判断,还要考虑数据的类型,一不小心就会出错,下面使用`sql-build`来重构上述代码
+```go
+func UpdateUser(id int, username, sex, name string, state int, money float64, qq, email string) error {
+	sql, err := sqlBuild.Update("user").
+		Where_(id, "id").
+		Set(username, "username").
+		Set(sex, "sex").
+		Set(name, "name").
+		Set(state, "state").
+		Set(money, "money").
+		Set(qq, "qq").
+		Set(email, "email").
+		String()
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	_, err = o.Raw(sql).Exec()
+	return err
+}
+```
+一下子,就简洁了很多,还不用类型转换,不担心写错,如果配合idea的template功能一起使用,你会感觉更简单,晒一张图
+[idea](/img/temp.gif)
 
 ### 使用说明
 ````go
