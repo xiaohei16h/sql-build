@@ -93,7 +93,7 @@ func UpdateUser(id int, username, sex, name string, state int, money float64, qq
 }
 ```
 一下子,就简洁了很多,还不用类型转换,不担心写错,如果配合idea的template功能一起使用,你会感觉更简单,晒一张图
-[idea](/img/temp.gif)
+[idea](https://github.com/golyu/sql-build/blob/master/img/temp.gif)
 
 ### 使用说明
 ````go
