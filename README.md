@@ -535,7 +535,8 @@ insert功能支持以下函数
 - OrUpdate()InsertInf
 - String() (string, error)
 
-> 注意:insert方法因为需要在insert的方法上面加上insert的tag,value和values方法不可以同时使用
+> 注意1:insert方法因为需要在insert的方法上面加上insert的tag,value和values方法不可以同时使用
+> 注意2:如果有标记为 AUTO_INCREMENT 的自增主键,请将`insert`的`tag`去掉,否则,会引起主键冲突
 
 ##### value
 
