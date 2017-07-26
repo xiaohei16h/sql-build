@@ -536,13 +536,13 @@ insert功能支持以下函数
 - String() (string, error)
 
 > 注意1:insert方法因为需要在insert的方法上面加上insert的tag,value和values方法不可以同时使用
-> 注意2:如果有标记为 AUTO_INCREMENT 的自增主键,请将`insert`的`tag`去掉,否则,会引起主键冲突
+> 注意2:如果数据库中有自增主键,请在tags中用auto标出,使用`;`隔开,一个struct中只可以标记一个为auto为自增主键,如下面例子
 
 ##### value
 
 ```go
 type Tab struct {
-	Id   int `insert:"id"`
+	Id   int `insert:"id;auto"`
 	Name string `insert:"name"`
 	Age  int `insert:"age"`
 }

@@ -35,6 +35,7 @@ type BuildCore struct {
 
 	//insert
 	insertColumns     []string
+	insertAuto        int
 	insertTags        []int
 	insertValues      []string
 	isOrUpdate        bool
@@ -177,7 +178,7 @@ func (b *BuildCore) where(whereValue interface{}, key string, rule Rule) {
 		b.err = err
 		return
 	}
-	if value != rule.StringValue && value != strings.Join([]string{"'","'"},rule.StringValue) {
+	if value != rule.StringValue && value != strings.Join([]string{"'", "'"}, rule.StringValue) {
 		if !strings.ContainsAny(key, ">=<") {
 			key += " = "
 		}
@@ -198,7 +199,7 @@ func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule) {
 		b.err = err
 		return
 	}
-	if value != rule.StringValue && value != strings.Join([]string{"'","'"},rule.StringValue) {
+	if value != rule.StringValue && value != strings.Join([]string{"'", "'"}, rule.StringValue) {
 		if !strings.ContainsAny(key, ">=<") {
 			key += " = "
 		}
@@ -221,7 +222,7 @@ func (b *BuildCore) set(setValue interface{}, key string, rule Rule) {
 		b.err = err
 		return
 	}
-	if value != rule.StringValue && value != strings.Join([]string{"'","'"},rule.StringValue) {
+	if value != rule.StringValue && value != strings.Join([]string{"'", "'"}, rule.StringValue) {
 		b.setValues = append(b.setValues, key+" = "+value)
 	}
 }
@@ -238,7 +239,7 @@ func (b *BuildCore) set_(setValue interface{}, key string, rule Rule) {
 		b.err = err
 		return
 	}
-	if value != rule.StringValue && value != strings.Join([]string{"'","'"},rule.StringValue){
+	if value != rule.StringValue && value != strings.Join([]string{"'", "'"}, rule.StringValue) {
 		b.setValues = append(b.setValues, key+" = "+value)
 	} else {
 		b.err = ErrSet
@@ -282,10 +283,15 @@ func (b *BuildCore) column(column string) {
 }
 
 func (b *BuildCore) setValueColumns(ty reflect.Type, tag string) {
+	b.insertAuto = -1
 	for i := 0; i < ty.NumField(); i++ {
 		name := ty.Field(i).Tag.Get(tag)
 		if name != "" {
-			b.insertColumns = append(b.insertColumns, name)
+			columnTags := strings.Split(name, ";")
+			b.insertColumns = append(b.insertColumns, columnTags[0])
+			if len(columnTags) > 1 && columnTags[1] == "auto" {
+				b.insertAuto = len(b.insertColumns)-1
+			}
 			b.insertTags = append(b.insertTags, i)
 		}
 	}
@@ -308,6 +314,10 @@ func (b *BuildCore) value(ind reflect.Value, rule Rule, wg ... *sync.WaitGroup) 
 		values = append(values, value)
 	}
 	if len(values) > 0 {
+		//判断自增列为default
+		if b.insertAuto >= 0 && len(values) > b.insertAuto && values[b.insertAuto] == "DEFAULT" {
+			values[b.insertAuto] = "NULL"
+		}
 		row := strings.Join(values, ",")
 		func() {
 			b.insertValuesMutex.Lock()

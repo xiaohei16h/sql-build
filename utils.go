@@ -18,7 +18,9 @@ func CheckInjection(val string) (injection bool) {
 			strings.Contains(val, "drop ") ||
 			strings.Contains(val, "create ") ||
 			strings.Contains(val, "alter ")
-		debug.Error("Injection <" + val + ">")
+		if injection {
+			debug.Error("Injection <" + val + ">")
+		}
 	}
 	return
 }

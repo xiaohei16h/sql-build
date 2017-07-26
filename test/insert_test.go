@@ -7,7 +7,7 @@ import (
 )
 
 type Tab struct {
-	Id   int `insert:"id"`
+	Id   int `insert:"id;auto"`
 	Name string `insert:"name"`
 	Age  int `insert:"age"`
 }
