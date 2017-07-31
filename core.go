@@ -108,7 +108,7 @@ func (b *BuildCore) like(likeValue, key string) {
 		debug.Println("The LikeKey can not be empty")
 		return
 	}
-	if likeValue == "" {
+	if likeValue == "" || strings.Count(likeValue, "%") == len(likeValue) {
 		debug.Println("The likeValue is nil")
 		return
 	}
@@ -290,7 +290,7 @@ func (b *BuildCore) setValueColumns(ty reflect.Type, tag string) {
 			columnTags := strings.Split(name, ";")
 			b.insertColumns = append(b.insertColumns, columnTags[0])
 			if len(columnTags) > 1 && columnTags[1] == "auto" {
-				b.insertAuto = len(b.insertColumns)-1
+				b.insertAuto = len(b.insertColumns) - 1
 			}
 			b.insertTags = append(b.insertTags, i)
 		}

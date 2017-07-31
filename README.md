@@ -5,6 +5,10 @@ sql-build是一个支持条件控制的go语言sql拼接库.共分为4个部分,
 ```go
 go get github.com/golyu/sql-build
 ```
+### upgrade
+```go
+go get -u github.com/golyu/sql-build
+```
     
 主要功能有
 - 无序的链式拼接
