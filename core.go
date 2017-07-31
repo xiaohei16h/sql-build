@@ -223,7 +223,10 @@ func (b *BuildCore) set(setValue interface{}, key string, rule Rule) {
 		return
 	}
 	if value != rule.StringValue && value != strings.Join([]string{"'", "'"}, rule.StringValue) {
-		b.setValues = append(b.setValues, key+" = "+value)
+		if !strings.ContainsAny(key, ">=<") {
+			key += " = "
+		}
+		b.setValues = append(b.setValues, key+value)
 	}
 }
 func (b *BuildCore) set_(setValue interface{}, key string, rule Rule) {
@@ -240,7 +243,10 @@ func (b *BuildCore) set_(setValue interface{}, key string, rule Rule) {
 		return
 	}
 	if value != rule.StringValue && value != strings.Join([]string{"'", "'"}, rule.StringValue) {
-		b.setValues = append(b.setValues, key+" = "+value)
+		if !strings.ContainsAny(key, ">=<") {
+			key += " = "
+		}
+		b.setValues = append(b.setValues, key+value)
 	} else {
 		b.err = ErrSet
 	}
