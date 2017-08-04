@@ -723,8 +723,20 @@ UPDATE myTable SET name = '' WHERE id = '123'
 
 `set_`,`where_`,这种后面带下划线的都表强制,如果不符合过滤条件,就会返回错误,而不带下划线的`set`,`where`都是跳过不合条件的数据
 
-
 > 以上的详细示例都可以在`test`文件夹下的测试文件中找到
+
+##### 常见错误对照表
+|错误|错误原因|相关函数|
+|---|---|---|
+|`The tabName can not be empty  meiy`|没有给表名|Select(),Update(),Insert(),Delete()|
+|`The Value not have need type`|传的值不是预期的类型|Value(),Values(),Set(),Set_(),Where_(),Where()|
+|`Injection err`|可能会有注入危险|all|
+|`Not Found Update Data`|没有需要更新的数据|Set(),Set_()|
+|`Fail to meet the condition`|不符合过滤条件|Where_()|
+|`Fail to meet the set`|不符合过滤条件|Set_()|
+|`Need 'Offset' and 'Limit' are used together`|offset方法必须配合limit方法使用|Offset()|
+|`Not found Insert Column`|没有找到insert的列名|tag insert:"xxx"|
+|`Not found Insert Data`|没有找到要insert的数据|没有要insert的数据|
 
 
 
