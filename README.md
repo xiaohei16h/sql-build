@@ -534,6 +534,8 @@ Injection err
 insert功能支持以下函数
 
 - Insert(table string) InsertInf
+- Option(options ...string) InsertInf
+- NoOption(noOptions...string)InsertInf
 - Value(value interface{}, rules ... Rule) InsertInf
 - Values(value interface{}, rules ... Rule) InsertInf
 - OrUpdate()InsertInf
@@ -541,7 +543,7 @@ insert功能支持以下函数
 
 > 注意1:insert方法因为需要在insert的方法上面加上insert的tag,value和values方法不可以同时使用
 > 注意2:如果数据库中有自增主键,请在tags中用auto标出,使用`;`隔开,一个struct中只可以标记一个为auto为自增主键,如下面例子
-
+> 注意3:如果使用了option或者noOption方法,请按调用顺序放在value和values前面
 ##### value
 
 ```go
@@ -609,6 +611,46 @@ sql打印:
 ```go
 INSERT INTO xx(id,name,age) VALUES (DEFAULT,'xx',16),(DEFAULT,'yiersan',18),(DEFAULT,'pp',18)  ON DUPLICATE KEY UPDATE id = values(id),name = values(name),age = values(age)
 ```
+##### Option 只insert指定选项
+```go
+func TestOption(t *testing.T) {
+	debug.Debug = true
+	var tab1 = Tab{Id: 0, Name: "yiersan", Age: 18}
+	sql, err := sqlBuild.Insert("xx").
+		Option("name").
+		Value(&tab1).String()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(sql)
+}
+```
+sql打印
+```go
+INSERT INTO xx(name) VALUES ('yiersan') 
+```
+##### NoOption 不insert指定选项
+```go
+func TestNoOption(t *testing.T) {
+	debug.Debug = true
+	var tab1 = Tab{Id: 0, Name: "yiersan", Age: 18}
+	var tab2 = Tab{Id: 0, Name: "xx", Age: 16}
+	var tab3 = Tab{Id: 0, Name: "pp", Age: 18}
+	var tabs = []Tab{tab1, tab2, tab3}
+	sql, err := sqlBuild.Insert("xx").
+		NoOption("name").
+		Values(tabs).OrUpdate().String()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(sql)
+}
+```
+sql打印
+```go
+INSERT INTO xx(id,age) VALUES (NULL,18),(NULL,18),(NULL,16)  ON DUPLICATE KEY UPDATE id = values(id),age = values(age)
+```
+
 #### Delete
 delete功能支持以下函数
 

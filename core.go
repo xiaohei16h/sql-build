@@ -34,6 +34,8 @@ type BuildCore struct {
 	likeValues    []string
 
 	//insert
+	insertOptions     []string
+	insertNoOptions   []string
 	insertColumns     []string
 	insertAuto        int
 	insertTags        []int
@@ -292,7 +294,7 @@ func (b *BuildCore) setValueColumns(ty reflect.Type, tag string) {
 	b.insertAuto = -1
 	for i := 0; i < ty.NumField(); i++ {
 		name := ty.Field(i).Tag.Get(tag)
-		if name != "" {
+		if name != "" && b.isOptions(name) && b.isNoOptions(name) {
 			columnTags := strings.Split(name, ";")
 			b.insertColumns = append(b.insertColumns, columnTags[0])
 			if len(columnTags) > 1 && columnTags[1] == "auto" {
@@ -301,6 +303,34 @@ func (b *BuildCore) setValueColumns(ty reflect.Type, tag string) {
 			b.insertTags = append(b.insertTags, i)
 		}
 	}
+}
+func (b *BuildCore) setNoOptions(noOptions []string) {
+	b.insertNoOptions = noOptions
+}
+
+func (b *BuildCore) isNoOptions(column string) bool {
+	for i := 0; i < len(b.insertNoOptions); i++ {
+		if b.insertNoOptions[i] == column {
+			return false
+		}
+	}
+	return true
+}
+
+func (b *BuildCore) setOptions(options []string) {
+	b.insertOptions = options
+}
+
+func (b *BuildCore) isOptions(column string) bool {
+	if len(b.insertOptions) == 0 {
+		return true
+	}
+	for i := 0; i < len(b.insertOptions); i++ {
+		if b.insertOptions[i] == column {
+			return true
+		}
+	}
+	return false
 }
 
 func (b *BuildCore) value(ind reflect.Value, rule Rule, wg ... *sync.WaitGroup) {

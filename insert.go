@@ -31,6 +31,20 @@ func (i *InsertBuild) Value(value interface{}, rules ... Rule) InsertInf {
 	i.value(ind, rule, )
 	return i
 }
+func (i *InsertBuild) NoOption(noOptions ...string) InsertInf {
+	if len(noOptions) > 0 {
+		i.setNoOptions(noOptions)
+	}
+	return i
+}
+
+func (i *InsertBuild) Option(options ...string) InsertInf {
+	if len(options) > 0 {
+		i.setOptions(options)
+	}
+	return i
+}
+
 func (i *InsertBuild) Values(value interface{}, rules ... Rule) InsertInf {
 	vals := reflect.ValueOf(value)
 	if vals.Kind() != reflect.Slice {

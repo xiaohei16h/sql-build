@@ -21,6 +21,8 @@ type SelectInf interface {
 
 type InsertInf interface {
 	Insert(table string) InsertInf
+	Option(options ...string) InsertInf
+	NoOption(noOptions...string)InsertInf
 	Value(value interface{}, rules ... Rule) InsertInf
 	Values(value interface{}, rules ... Rule) InsertInf
 	OrUpdate() InsertInf
