@@ -2,7 +2,6 @@ package sqlBuild
 
 import (
 	"strings"
-	"github.com/golyu/sql-build/debug"
 	"fmt"
 	"reflect"
 )
