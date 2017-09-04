@@ -8,20 +8,20 @@ import (
 )
 
 func CheckInjection(val string) (injection bool) {
-	if val != "" {
-		val = strings.ToLower(val)
-		injection = strings.Contains(val, "select ") ||
-			strings.Contains(val, "update ") ||
-			strings.Contains(val, "delete ") ||
-			strings.Contains(val, "insert ") ||
-			strings.Contains(val, "declare ") ||
-			strings.Contains(val, "drop ") ||
-			strings.Contains(val, "create ") ||
-			strings.Contains(val, "alter ")
-		if injection {
-			debug.Error("Injection <" + val + ">")
-		}
-	}
+	//if val != "" {
+		//val = strings.ToLower(val)
+		//injection = strings.Contains(val, "select ") ||
+		//	strings.Contains(val, "update ") ||
+		//	strings.Contains(val, "delete ") ||
+		//	strings.Contains(val, "insert ") ||
+		//	strings.Contains(val, "declare ") ||
+		//	strings.Contains(val, "drop ") ||
+		//	strings.Contains(val, "create ") ||
+		//	strings.Contains(val, "alter ")
+		//if injection {
+		//	debug.Error("Injection <" + val + ">")
+		//}
+	//}
 	return
 }
 func GetInValues(inValues interface{}) (strs []string, err error) {
