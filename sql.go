@@ -6,7 +6,7 @@ import (
 
 type SelectInf interface {
 	Select(table string) SelectInf
-	Column(column string) SelectInf
+	Column(columns... string) SelectInf
 	Where(value interface{}, key string, rules ... Rule) SelectInf
 	Where_(value interface{}, key string, rules ... Rule) SelectInf
 	Like(value string, key string) SelectInf

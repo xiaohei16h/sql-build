@@ -19,7 +19,7 @@ func TestTable(t *testing.T) {
 
 func TestColumn(t *testing.T) {
 	sql, err := sqlBuild.Select("myTab").
-		Column("aaa").
+		Column("aaa","zzz").
 		Column("bbb as xx").
 		Column("").
 		String()

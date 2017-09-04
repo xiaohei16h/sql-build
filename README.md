@@ -159,7 +159,7 @@ The tabName can not be empty
 ```go
 func TestColumn(t *testing.T) {
 	sql, err := sqlBuild.Select("myTab").
-		Column("aaa").
+		Column("aaa","zzz").
 		Column("bbb as xx").
 		Column("").
 		String()

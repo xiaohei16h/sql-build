@@ -15,8 +15,10 @@ func (s *SelectBuild) Select(table string) SelectInf {
 	return s
 }
 
-func (s *SelectBuild) Column(column string) SelectInf {
-	s.column(column)
+func (s *SelectBuild) Column(columns ... string) SelectInf {
+	for _, column := range columns {
+		s.column(column)
+	}
 	return s
 }
 func (s *SelectBuild) Where(value interface{}, key string, rules ... Rule) SelectInf {
@@ -76,7 +78,7 @@ func (s *SelectBuild) String() (string, error) {
 	if len(s.columnValues) == 0 {
 		column = " *"
 	} else {
-		column = " "+strings.Join(s.columnValues, ",")
+		column = " " + strings.Join(s.columnValues, ",")
 	}
 	//where
 	var where string
