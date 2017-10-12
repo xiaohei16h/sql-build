@@ -289,3 +289,14 @@ func TestAll(t *testing.T) {
 	}
 	t.Log(sql)
 }
+
+//test bug tag:#2
+func TestBug2(t *testing.T)  {
+	sql, err := sqlBuild.Select("myTable").
+		Where(float64(1503909330000), "time > ").
+		String()
+	if err != nil {
+		t.Error(err.Error())
+	}
+	t.Log(sql)
+}

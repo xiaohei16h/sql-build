@@ -170,11 +170,11 @@ func GetWhereSetValues(values interface{}, rule Rule) (value string,
 		}
 	case float64:
 		if float64(value) > rule.Float64Value {
-			return fmt.Sprintf("%g", float64(value)), nil
+			return fmt.Sprintf("%f", float64(value)), nil
 		}
 	case float32:
 		if float32(value) > rule.Float32Value {
-			return fmt.Sprintf("%g", float32(value)), nil
+			return fmt.Sprintf("%f", float32(value)), nil
 		}
 	case string:
 		if string(value) != rule.StringValue {
@@ -245,12 +245,12 @@ func GetValue(value reflect.Value, rule Rule) (string, error) {
 	case reflect.Float32:
 		temp := value.Float()
 		if float32(temp) > rule.Float32Value {
-			return fmt.Sprintf("%g", temp), nil
+			return fmt.Sprintf("%f", temp), nil
 		}
 	case reflect.Float64:
 		temp := value.Float()
 		if float64(temp) > rule.Float64Value {
-			return fmt.Sprintf("%g", temp), nil
+			return fmt.Sprintf("%f", temp), nil
 		}
 	case reflect.String:
 		temp := value.String()
