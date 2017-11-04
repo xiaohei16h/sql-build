@@ -8,18 +8,18 @@ import (
 
 func CheckInjection(val string) (injection bool) {
 	//if val != "" {
-		//val = strings.ToLower(val)
-		//injection = strings.Contains(val, "select ") ||
-		//	strings.Contains(val, "update ") ||
-		//	strings.Contains(val, "delete ") ||
-		//	strings.Contains(val, "insert ") ||
-		//	strings.Contains(val, "declare ") ||
-		//	strings.Contains(val, "drop ") ||
-		//	strings.Contains(val, "create ") ||
-		//	strings.Contains(val, "alter ")
-		//if injection {
-		//	debug.Error("Injection <" + val + ">")
-		//}
+	//val = strings.ToLower(val)
+	//injection = strings.Contains(val, "select ") ||
+	//	strings.Contains(val, "update ") ||
+	//	strings.Contains(val, "delete ") ||
+	//	strings.Contains(val, "insert ") ||
+	//	strings.Contains(val, "declare ") ||
+	//	strings.Contains(val, "drop ") ||
+	//	strings.Contains(val, "create ") ||
+	//	strings.Contains(val, "alter ")
+	//if injection {
+	//	debug.Error("Injection <" + val + ">")
+	//}
 	//}
 	return
 }
@@ -177,9 +177,14 @@ func GetWhereSetValues(values interface{}, rule Rule) (value string,
 			return fmt.Sprintf("%f", float32(value)), nil
 		}
 	case string:
-		if string(value) != rule.StringValue {
+		stringValue := string(value)
+		if stringValue != rule.StringValue {
 			if CheckInjection(string(value)) {
 				return "", ErrInjection
+			}
+			if i, j := strings.Index(stringValue, "("), strings.LastIndex(stringValue,
+				")"); i > 0 && j > 0 && j == len(stringValue)-1 {
+				return stringValue, nil
 			}
 			return strings.Join([]string{"'", "'"}, string(value)), nil
 		}
