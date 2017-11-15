@@ -281,7 +281,24 @@ Fail to meet the condition
 ```
 可以看出,`Where_`功能上和`Where`基本一致,只是把过滤替换成了抛出异常,这是对于有些业务需要指定的条件,而该条件可能为空的情况,做出的判断
 
-> Where条件能自动过滤Where("toTimeUUID('2017-10-27 01:00+0000')", "tid > ").这种函数的调用,在结果两边不会自动加上''
+##### WhereFunc
+WhereFunc条件能自动过滤WhereFunc("toTimeUUID('2017-10-27 01:00+0000')", "tid > ").这种函数的调用,在结果两边不会自动加上''
+ ```go
+func TestBug3(t *testing.T) {
+	sql, err := sqlBuild.Select("permission ").
+		Column("service", "operation").
+		WhereFunc("toTimeUUID('2017-10-27 01:00+0000')", "tid > ").
+		String()
+	if err != nil {
+		t.Error(err.Error())
+	}
+	t.Log(sql)
+}
+```
+sql输出
+```go
+SELECT service,operation FROM permission  WHERE tid > toTimeUUID('2017-10-27 01:00+0000')
+```
 
 ##### GroupBy
 ```go

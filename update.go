@@ -30,12 +30,22 @@ func (u *UpdateBuild) Set_(value interface{}, key string, rules ... Rule) Update
 	u.set_(value, key, rule)
 	return u
 }
+
+func (s *UpdateBuild) WhereFunc(value interface{}, key string, rules ...Rule) UpdateInf {
+	var rule Rule
+	if len(rules) > 0 {
+		rule = rules[0]
+	}
+	s.where(value, key, rule, GetWhereSetFuncValues)
+	return s
+}
+
 func (u *UpdateBuild) Where(value interface{}, key string, rules ... Rule) UpdateInf {
 	var rule Rule
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	u.where(value, key, rule)
+	u.where(value, key, rule, GetWhereSetValues)
 	return u
 }
 func (u *UpdateBuild) Where_(value interface{}, key string, rules ... Rule) UpdateInf {
@@ -43,7 +53,7 @@ func (u *UpdateBuild) Where_(value interface{}, key string, rules ... Rule) Upda
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	u.where_(value, key, rule)
+	u.where_(value, key, rule, GetWhereSetValues)
 	return u
 }
 func (u *UpdateBuild) Like(value string, key string) UpdateInf {
@@ -86,8 +96,8 @@ func (s *UpdateBuild) String() (string, error) {
 	var set string
 	if len(s.setValues) > 0 {
 		set = " SET " + strings.Join(s.setValues, ",")
-	}else {
-		return "",ErrNoUpdate
+	} else {
+		return "", ErrNoUpdate
 	}
 
 	//where

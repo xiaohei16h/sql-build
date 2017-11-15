@@ -15,12 +15,21 @@ func (d *DeleteBuild) Delete(table string) DeleteInf {
 	return d
 }
 
+func (s *DeleteBuild) WhereFunc(value interface{}, key string, rules ...Rule) DeleteInf {
+	var rule Rule
+	if len(rules) > 0 {
+		rule = rules[0]
+	}
+	s.where(value, key, rule, GetWhereSetFuncValues)
+	return s
+}
+
 func (d *DeleteBuild) Where(value interface{}, key string, rules ... Rule) DeleteInf {
 	var rule Rule
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	d.where(value, key, rule)
+	d.where(value, key, rule,GetWhereSetValues)
 	return d
 }
 func (d *DeleteBuild) Where_(value interface{}, key string, rules ... Rule) DeleteInf {
@@ -28,7 +37,7 @@ func (d *DeleteBuild) Where_(value interface{}, key string, rules ... Rule) Dele
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	d.where_(value, key, rule)
+	d.where_(value, key, rule,GetWhereSetValues)
 	return d
 }
 func (d *DeleteBuild) Like(value string, key string) DeleteInf {

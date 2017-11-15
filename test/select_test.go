@@ -19,7 +19,7 @@ func TestTable(t *testing.T) {
 
 func TestColumn(t *testing.T) {
 	sql, err := sqlBuild.Select("myTab").
-		Column("aaa", "zzz").
+		Column("aaa","zzz").
 		Column("bbb as xx").
 		Column("").
 		String()
@@ -291,7 +291,7 @@ func TestAll(t *testing.T) {
 }
 
 //test bug tag:#2
-func TestBug2(t *testing.T) {
+func TestBug2(t *testing.T)  {
 	sql, err := sqlBuild.Select("myTable").
 		Where(float64(1503909330000), "time > ").
 		String()
@@ -300,12 +300,11 @@ func TestBug2(t *testing.T) {
 	}
 	t.Log(sql)
 }
-
 //test bug tag:#3
 func TestBug3(t *testing.T) {
 	sql, err := sqlBuild.Select("permission ").
 		Column("service", "operation").
-		Where("toTimeUUID('2017-10-27 01:00+0000')", "tid > ").
+		WhereFunc("toTimeUUID('2017-10-27 01:00+0000')", "tid > ").
 		String()
 	if err != nil {
 		t.Error(err.Error())

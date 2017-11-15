@@ -10,6 +10,16 @@ type SelectBuild struct {
 	BuildCore
 }
 
+func (s *SelectBuild) WhereFunc(value interface{}, key string, rules ...Rule) SelectInf {
+	var rule Rule
+	if len(rules) > 0 {
+		rule = rules[0]
+	}
+	s.where(value, key, rule, GetWhereSetFuncValues)
+	return s
+}
+
+
 func (s *SelectBuild) Select(table string) SelectInf {
 	s.setTabName(table)
 	return s
@@ -26,7 +36,7 @@ func (s *SelectBuild) Where(value interface{}, key string, rules ... Rule) Selec
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	s.where(value, key, rule)
+	s.where(value, key, rule, GetWhereSetValues)
 	return s
 }
 func (s *SelectBuild) Where_(value interface{}, key string, rules ... Rule) SelectInf {
@@ -34,7 +44,7 @@ func (s *SelectBuild) Where_(value interface{}, key string, rules ... Rule) Sele
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	s.where_(value, key, rule)
+	s.where_(value, key, rule, GetWhereSetValues)
 	return s
 }
 func (s *SelectBuild) Like(value string, key string) SelectInf {

@@ -6,9 +6,10 @@ import (
 
 type SelectInf interface {
 	Select(table string) SelectInf
-	Column(columns... string) SelectInf
+	Column(columns ... string) SelectInf
 	Where(value interface{}, key string, rules ... Rule) SelectInf
 	Where_(value interface{}, key string, rules ... Rule) SelectInf
+	WhereFunc(value interface{}, key string, rules ...Rule) SelectInf
 	Like(value string, key string) SelectInf
 	In(values interface{}, key string) SelectInf
 	NotIn(values interface{}, key string) SelectInf
@@ -22,7 +23,7 @@ type SelectInf interface {
 type InsertInf interface {
 	Insert(table string) InsertInf
 	Option(options ...string) InsertInf
-	NoOption(noOptions...string)InsertInf
+	NoOption(noOptions ...string) InsertInf
 	Value(value interface{}, rules ... Rule) InsertInf
 	Values(value interface{}, rules ... Rule) InsertInf
 	OrUpdate() InsertInf
@@ -35,6 +36,7 @@ type UpdateInf interface {
 	Set_(value interface{}, key string, rules ... Rule) UpdateInf
 	Where(value interface{}, key string, rules ... Rule) UpdateInf
 	Where_(value interface{}, key string, rules ... Rule) UpdateInf
+	WhereFunc(value interface{}, key string, rules ...Rule) UpdateInf
 	Like(value string, key string) UpdateInf
 	In(values interface{}, key string) UpdateInf
 	NotIn(values interface{}, key string) UpdateInf
@@ -49,6 +51,7 @@ type DeleteInf interface {
 	Delete(table string) DeleteInf
 	Where(value interface{}, key string, rules ... Rule) DeleteInf
 	Where_(value interface{}, key string, rules ... Rule) DeleteInf
+	WhereFunc(value interface{}, key string, rules ...Rule) DeleteInf
 	Like(value string, key string) DeleteInf
 	In(values interface{}, key string) DeleteInf
 	NotIn(values interface{}, key string) DeleteInf

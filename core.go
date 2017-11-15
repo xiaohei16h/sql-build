@@ -167,7 +167,8 @@ func (b *BuildCore) notin(notinValues interface{}, key string) {
 	}
 }
 
-func (b *BuildCore) where(whereValue interface{}, key string, rule Rule) {
+func (b *BuildCore) where(whereValue interface{}, key string, rule Rule,f func(values interface{}, rule Rule) (value string,
+err error)) {
 	if b.err != nil {
 		return
 	}
@@ -175,7 +176,7 @@ func (b *BuildCore) where(whereValue interface{}, key string, rule Rule) {
 		debug.Println("The 'WhereKey' can not be empty")
 		return
 	}
-	value, err := GetWhereSetValues(whereValue, rule)
+	value, err := f(whereValue, rule)
 	if err != nil {
 		b.err = err
 		return
@@ -188,7 +189,10 @@ func (b *BuildCore) where(whereValue interface{}, key string, rule Rule) {
 	}
 }
 
-func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule) {
+
+
+func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule,f func(values interface{}, rule Rule) (value string,
+	err error)) {
 	if b.err != nil {
 		return
 	}
@@ -196,7 +200,7 @@ func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule) {
 		debug.Println("The WhereKey can not be empty")
 		return
 	}
-	value, err := GetWhereSetValues(whereValue, rule)
+	value, err := f(whereValue, rule)
 	if err != nil {
 		b.err = err
 		return

@@ -125,7 +125,21 @@ func GetInValues(inValues interface{}) (strs []string, err error) {
 	return
 }
 
+func GetWhereSetFuncValues(values interface{}, rule Rule) (value string,
+	err error) {
+	return getWhereSetValues(values,rule, func(value string) string {
+		return string(value)
+	})
+}
+
 func GetWhereSetValues(values interface{}, rule Rule) (value string,
+	err error) {
+	return getWhereSetValues(values,rule, func(value string) string {
+		return strings.Join([]string{"'", "'"}, string(value))
+	})
+}
+
+func getWhereSetValues(values interface{}, rule Rule,f func(value string)string) (value string,
 	err error) {
 	switch value := values.(type) {
 	case int:
@@ -177,16 +191,11 @@ func GetWhereSetValues(values interface{}, rule Rule) (value string,
 			return fmt.Sprintf("%f", float32(value)), nil
 		}
 	case string:
-		stringValue := string(value)
-		if stringValue != rule.StringValue {
+		if string(value) != rule.StringValue {
 			if CheckInjection(string(value)) {
 				return "", ErrInjection
 			}
-			if i, j := strings.Index(stringValue, "("), strings.LastIndex(stringValue,
-				")"); i > 0 && j > 0 && j == len(stringValue)-1 {
-				return stringValue, nil
-			}
-			return strings.Join([]string{"'", "'"}, string(value)), nil
+			return f(string(value)),nil
 		}
 	default:
 		err = ErrValueType
