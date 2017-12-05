@@ -52,8 +52,9 @@ func (i *InsertBuild) Values(value interface{}, rules ... Rule) InsertInf {
 	}
 	if vals.Len() <= 0 {
 		i.err = ErrInsertValue
+		return i
 	}
-	structVal := vals.Index(0)
+	structVal := reflect.Indirect(vals.Index(0))
 	tag := "insert"
 	i.setValueColumns(structVal.Type(), tag)
 	var rule Rule
@@ -65,7 +66,7 @@ func (i *InsertBuild) Values(value interface{}, rules ... Rule) InsertInf {
 	for index := 0; index < vals.Len(); index++ {
 		go func(value reflect.Value) {
 			i.value(value, rule, &wg)
-		}(vals.Index(index))
+		}(reflect.Indirect(vals.Index(index)))
 	}
 	wg.Wait()
 	return i

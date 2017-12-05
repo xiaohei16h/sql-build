@@ -1,7 +1,7 @@
 package sqlBuild
 
 import (
-	"github.com/pkg/errors"
+	"errors"
 	"strings"
 	"github.com/golyu/sql-build/debug"
 	"reflect"
