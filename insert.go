@@ -46,7 +46,7 @@ func (i *InsertBuild) Option(options ...string) InsertInf {
 }
 
 func (i *InsertBuild) Values(value interface{}, rules ... Rule) InsertInf {
-	vals := reflect.ValueOf(value)
+	vals := reflect.Indirect(reflect.ValueOf(value))
 	if vals.Kind() != reflect.Slice {
 		panic(fmt.Errorf("The struct paramer must be use slice"))
 	}
