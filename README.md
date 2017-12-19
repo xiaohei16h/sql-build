@@ -561,7 +561,7 @@ insert功能支持以下函数
 - String() (string, error)
 
 > 注意1:insert方法因为需要在insert的方法上面加上insert的tag,value和values方法不可以同时使用
-> 注意2:如果数据库中有自增主键,请在tags中用auto标出,使用`;`隔开,一个struct中只可以标记一个为auto为自增主键,如下面例子
+> 注意2:如果数据库中有自增主键,请在tags中用auto标出,使用`;`隔开,一个struct中只可以标记一个为auto为自增主键,如果使用了mycat中间件来设置自动增长,需要在标注了auto的情况下再标注mycat标签auto;mycat:next value for MYCATSEQ_AGENT,如下面例子
 > 注意3:如果使用了option或者noOption方法,请按调用顺序放在value和values前面
 ##### value
 
@@ -586,7 +586,31 @@ func TestValue(t *testing.T) {
 sql打印:
 ```go
 INSERT INTO xx(id,name,age) VALUES (DEFAULT,'yiersan',18)
+
 ```
+```go
+type Tab struct {
+	Id   int    `insert:"id;auto;mycat:next value for MYCATSEQ_AGENT"`
+	Name string `insert:"name"`
+	Age  int    `insert:"age"`
+}
+func TestMycat(t *testing.T) {
+	debug.Debug = true
+	var tab = Tab{Id: 0, Name: "yiersan", Age: 18}
+	sql, err := sqlBuild.Insert("xx").
+		Value(&tab).
+		String()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(sql)
+}
+```
+sql打印:
+```go
+INSERT INTO xx(id,name,age) VALUES (next value for MYCATSEQ_AGENT,'yiersan',18)
+```
+
 ##### values 批量插入
 
 ```go

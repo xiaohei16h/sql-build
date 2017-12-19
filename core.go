@@ -37,7 +37,8 @@ type BuildCore struct {
 	insertOptions     []string
 	insertNoOptions   []string
 	insertColumns     []string
-	insertAuto        int
+	insertAutoIndex   int    //自增列的field下标
+	insertMyCatValue  string //mycat id列的函数名称
 	insertTags        []int
 	insertValues      []string
 	isOrUpdate        bool
@@ -167,8 +168,8 @@ func (b *BuildCore) notin(notinValues interface{}, key string) {
 	}
 }
 
-func (b *BuildCore) where(whereValue interface{}, key string, rule Rule,f func(values interface{}, rule Rule) (value string,
-err error)) {
+func (b *BuildCore) where(whereValue interface{}, key string, rule Rule, f func(values interface{}, rule Rule) (value string,
+	err error)) {
 	if b.err != nil {
 		return
 	}
@@ -189,9 +190,7 @@ err error)) {
 	}
 }
 
-
-
-func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule,f func(values interface{}, rule Rule) (value string,
+func (b *BuildCore) where_(whereValue interface{}, key string, rule Rule, f func(values interface{}, rule Rule) (value string,
 	err error)) {
 	if b.err != nil {
 		return
@@ -295,14 +294,28 @@ func (b *BuildCore) column(column string) {
 }
 
 func (b *BuildCore) setValueColumns(ty reflect.Type, tag string) {
-	b.insertAuto = -1
+	b.insertAutoIndex = -1
 	for i := 0; i < ty.NumField(); i++ {
 		name := ty.Field(i).Tag.Get(tag)
 		if name != "" && b.isOptions(name) && b.isNoOptions(name) {
 			columnTags := strings.Split(name, ";")
-			b.insertColumns = append(b.insertColumns, columnTags[0])
-			if len(columnTags) > 1 && columnTags[1] == "auto" {
-				b.insertAuto = len(b.insertColumns) - 1
+			var myCat, columnTag string
+			var auto bool
+			for _, tempTag := range columnTags {
+				if len(tempTag) > 6 && strings.HasPrefix(tempTag, "mycat:") {
+					myCat = strings.Replace(tempTag, "mycat:", "", 1)
+				} else if tempTag == "auto" {
+					auto = true
+				} else {
+					columnTag = tempTag
+				}
+			}
+			b.insertColumns = append(b.insertColumns, columnTag) //追加上与数据库对应的tag
+			if auto {
+				b.insertAutoIndex = len(b.insertColumns) - 1
+				if myCat != "" {
+					b.insertMyCatValue = myCat
+				}
 			}
 			b.insertTags = append(b.insertTags, i)
 		}
@@ -355,8 +368,12 @@ func (b *BuildCore) value(ind reflect.Value, rule Rule, wg ... *sync.WaitGroup) 
 	}
 	if len(values) > 0 {
 		//判断自增列为default
-		if b.insertAuto >= 0 && len(values) > b.insertAuto && values[b.insertAuto] == "DEFAULT" {
-			values[b.insertAuto] = "NULL"
+		if b.insertAutoIndex >= 0 && len(values) > b.insertAutoIndex && values[b.insertAutoIndex] == "DEFAULT" {
+			if b.insertMyCatValue == "" {
+				values[b.insertAutoIndex] = "NULL"
+			} else {
+				values[b.insertAutoIndex] = b.insertMyCatValue
+			}
 		}
 		row := strings.Join(values, ",")
 		func() {

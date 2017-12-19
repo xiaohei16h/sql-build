@@ -7,9 +7,9 @@ import (
 )
 
 type Tab struct {
-	Id   int `insert:"id;auto"`
+	Id   int    `insert:"id;auto;mycat:next value for MYCATSEQ_AGENT"`
 	Name string `insert:"name"`
-	Age  int `insert:"age"`
+	Age  int    `insert:"age"`
 }
 
 func TestValue(t *testing.T) {
@@ -68,6 +68,17 @@ func TestNoOption(t *testing.T) {
 	sql, err := sqlBuild.Insert("xx").
 		NoOption("name").
 		Values(tabs).OrUpdate().String()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(sql)
+}
+func TestMycat(t *testing.T) {
+	debug.Debug = true
+	var tab = Tab{Id: 0, Name: "yiersan", Age: 18}
+	sql, err := sqlBuild.Insert("xx").
+		Value(&tab).
+		String()
 	if err != nil {
 		t.Error(err)
 	}
