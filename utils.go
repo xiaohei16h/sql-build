@@ -1,26 +1,26 @@
 package sqlBuild
 
 import (
-	"strings"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 func CheckInjection(val string) (injection bool) {
-	//if val != "" {
-	//val = strings.ToLower(val)
-	//injection = strings.Contains(val, "select ") ||
-	//	strings.Contains(val, "update ") ||
-	//	strings.Contains(val, "delete ") ||
-	//	strings.Contains(val, "insert ") ||
-	//	strings.Contains(val, "declare ") ||
-	//	strings.Contains(val, "drop ") ||
-	//	strings.Contains(val, "create ") ||
-	//	strings.Contains(val, "alter ")
-	//if injection {
-	//	debug.Error("Injection <" + val + ">")
-	//}
-	//}
+	if val != "" {
+		val = strings.ToLower(val)
+		injection = strings.Contains(val, "select ") ||
+			strings.Contains(val, "update ") ||
+			strings.Contains(val, "delete ") ||
+			strings.Contains(val, "insert ") ||
+			strings.Contains(val, "declare ") ||
+			strings.Contains(val, "drop ") ||
+			strings.Contains(val, "create ") ||
+			strings.Contains(val, "alter ")
+		if injection {
+			debug.Error("Injection <" + val + ">")
+		}
+	}
 	return
 }
 func GetInValues(inValues interface{}) (strs []string, err error) {
@@ -127,19 +127,19 @@ func GetInValues(inValues interface{}) (strs []string, err error) {
 
 func GetWhereSetFuncValues(values interface{}, rule Rule) (value string,
 	err error) {
-	return getWhereSetValues(values,rule, func(value string) string {
+	return getWhereSetValues(values, rule, func(value string) string {
 		return string(value)
 	})
 }
 
 func GetWhereSetValues(values interface{}, rule Rule) (value string,
 	err error) {
-	return getWhereSetValues(values,rule, func(value string) string {
+	return getWhereSetValues(values, rule, func(value string) string {
 		return strings.Join([]string{"'", "'"}, string(value))
 	})
 }
 
-func getWhereSetValues(values interface{}, rule Rule,f func(value string)string) (value string,
+func getWhereSetValues(values interface{}, rule Rule, f func(value string) string) (value string,
 	err error) {
 	switch value := values.(type) {
 	case int:
@@ -195,7 +195,7 @@ func getWhereSetValues(values interface{}, rule Rule,f func(value string)string)
 			if CheckInjection(string(value)) {
 				return "", ErrInjection
 			}
-			return f(string(value)),nil
+			return f(string(value)), nil
 		}
 	default:
 		err = ErrValueType
