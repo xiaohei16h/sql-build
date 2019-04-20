@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"github.com/golyu/sql-build/debug"
 )
 
 func CheckInjection(val string) (injection bool) {
