@@ -2,9 +2,9 @@ package sqlBuild
 
 import (
 	"errors"
-	"strings"
-	"github.com/golyu/sql-build/debug"
 	"reflect"
+	"sqlBuild/debug"
+	"strings"
 	"sync"
 )
 
@@ -34,15 +34,16 @@ type BuildCore struct {
 	likeValues    []string
 
 	//insert
-	insertOptions     []string
-	insertNoOptions   []string
-	insertColumns     []string
-	insertAutoIndex   int    //自增列的field下标
-	insertMyCatValue  string //mycat id列的函数名称
-	insertTags        []int
-	insertValues      []string
-	isOrUpdate        bool
-	insertValuesMutex sync.Mutex
+	insertOptions                       []string
+	insertNoOptions                     []string
+	insertNoOnDuplicateKeyUpdateOptions map[string]bool
+	insertColumns                       []string
+	insertAutoIndex                     int    //自增列的field下标
+	insertMyCatValue                    string //mycat id列的函数名称
+	insertTags                          []int
+	insertValues                        []string
+	isOrUpdate                          bool
+	insertValuesMutex                   sync.Mutex
 
 	err error
 }
@@ -325,6 +326,24 @@ func (b *BuildCore) setNoOptions(noOptions []string) {
 	b.insertNoOptions = noOptions
 }
 
+func (b *BuildCore) setNoOnDuplicateKeyUpdateOptions(noOptions []string) {
+	if b.insertNoOnDuplicateKeyUpdateOptions == nil {
+		b.insertNoOnDuplicateKeyUpdateOptions = make(map[string]bool)
+	}
+
+	for _, noKey := range noOptions {
+		b.insertNoOnDuplicateKeyUpdateOptions[noKey] = true
+	}
+}
+
+func (b *BuildCore) isNoOnDuplicateKeyUpdateOptions(column string) bool {
+	if _, ok := b.insertNoOnDuplicateKeyUpdateOptions[column]; ok {
+		return ok
+	}
+
+	return false
+}
+
 func (b *BuildCore) isNoOptions(column string) bool {
 	for i := 0; i < len(b.insertNoOptions); i++ {
 		if b.insertNoOptions[i] == column {
@@ -350,7 +369,7 @@ func (b *BuildCore) isOptions(column string) bool {
 	return false
 }
 
-func (b *BuildCore) value(ind reflect.Value, rule Rule, wg ... *sync.WaitGroup) {
+func (b *BuildCore) value(ind reflect.Value, rule Rule, wg ...*sync.WaitGroup) {
 	if len(wg) > 0 {
 		defer wg[0].Done()
 	}

@@ -3,8 +3,8 @@ package sqlBuild
 import (
 	"fmt"
 	"reflect"
+	"sqlBuild/debug"
 	"strings"
-	"github.com/golyu/sql-build/debug"
 )
 
 func CheckInjection(val string) (injection bool) {

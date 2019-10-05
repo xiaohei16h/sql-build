@@ -1,9 +1,9 @@
 package sqlBuild
 
 import (
+	"sqlBuild/debug"
 	"strings"
 	"strconv"
-	"github.com/golyu/sql-build/debug"
 )
 
 type UpdateBuild struct {

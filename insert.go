@@ -3,8 +3,8 @@ package sqlBuild
 import (
 	"reflect"
 	"fmt"
+	"sqlBuild/debug"
 	"strings"
-	"github.com/golyu/sql-build/debug"
 	"sync"
 )
 
@@ -34,6 +34,13 @@ func (i *InsertBuild) Value(value interface{}, rules ... Rule) InsertInf {
 func (i *InsertBuild) NoOption(noOptions ...string) InsertInf {
 	if len(noOptions) > 0 {
 		i.setNoOptions(noOptions)
+	}
+	return i
+}
+
+func (i *InsertBuild) NoOnDuplicateKeyUpdateOption(noOptions ...string) InsertInf {
+	if len(noOptions) > 0 {
+		i.setNoOnDuplicateKeyUpdateOptions(noOptions)
 	}
 	return i
 }
@@ -108,6 +115,10 @@ func (i *InsertBuild) String() (string, error) {
 	if i.isOrUpdate {
 		var orUpdates []string
 		for _, v := range i.insertColumns {
+			if i.isNoOnDuplicateKeyUpdateOptions(v) {
+				continue
+			}
+
 			temp := strings.Join([]string{v, v}, " = values(")
 			orUpdates = append(orUpdates, temp)
 		}

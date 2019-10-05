@@ -1,9 +1,9 @@
 package sqlBuild
 
 import (
+	"sqlBuild"
+	"sqlBuild/debug"
 	"testing"
-	"github.com/golyu/sql-build"
-	"github.com/golyu/sql-build/debug"
 )
 
 type Tab struct {
@@ -42,7 +42,7 @@ func TestOrUpdate(t *testing.T) {
 	var tab3 = Tab{Id: 0, Name: "pp", Age: 18}
 	var tabs = []Tab{tab1, tab2, tab3}
 	sql, err := sqlBuild.Insert("xx").
-		Values(tabs).OrUpdate().String()
+		Values(tabs).OrUpdate().NoOnDuplicateKeyUpdateOption("id").String()
 	if err != nil {
 		t.Error(err)
 	}

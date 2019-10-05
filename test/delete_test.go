@@ -1,7 +1,7 @@
 package sqlBuild
 
 import (
-	"github.com/golyu/sql-build"
+	"sqlBuild"
 	"testing"
 )
 

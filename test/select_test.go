@@ -1,8 +1,8 @@
 package sqlBuild
 
 import (
+	"sqlBuild"
 	"testing"
-	"github.com/golyu/sql-build"
 )
 
 func TestTable(t *testing.T) {
