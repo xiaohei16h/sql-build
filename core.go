@@ -3,7 +3,7 @@ package sqlBuild
 import (
 	"errors"
 	"reflect"
-	"sqlBuild/debug"
+	"github.com/xiaohei16h/sql-build/debug"
 	"strings"
 	"sync"
 )

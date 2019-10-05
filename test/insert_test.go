@@ -1,8 +1,8 @@
 package sqlBuild
 
 import (
-	"sqlBuild"
-	"sqlBuild/debug"
+	"github.com/xiaohei16h/sql-build"
+	"github.com/xiaohei16h/sql-build/debug"
 	"testing"
 )
 
