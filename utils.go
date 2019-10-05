@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"github.com/xiaohei16h/sql-build/debug"
 	"strings"
+	"time"
 )
 
 func CheckInjection(val string) (injection bool) {
@@ -276,5 +277,15 @@ func GetValue(value reflect.Value, rule Rule) (string, error) {
 			return strings.Join([]string{"'", "'"}, temp), nil
 		}
 	}
+
+	switch v := value.Interface().(type) {
+	case time.Time:
+		if v.IsZero() {
+			break
+		}
+
+		return strings.Join([]string{"'", "'"}, v.Format("2006-01-02 15:04:05.000")), nil
+	}
+
 	return "DEFAULT", nil
 }
