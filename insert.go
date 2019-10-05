@@ -62,8 +62,10 @@ func (i *InsertBuild) Values(value interface{}, rules ... Rule) InsertInf {
 		return i
 	}
 	structVal := reflect.Indirect(vals.Index(0))
-	tag := "insert"
-	i.setValueColumns(structVal.Type(), tag)
+	tags := "insert,json"
+	for _, tag := range strings.Split(tags, ",") {
+		i.setValueColumns(structVal.Type(), tag)
+	}
 	var rule Rule
 	if len(rules) > 0 {
 		rule = rules[0]
