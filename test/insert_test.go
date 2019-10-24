@@ -16,7 +16,7 @@ type Tab struct {
 }
 
 func TestValue(t *testing.T) {
-	var tab = Tab{Id: 0, Name: "yiersan", Age: 18}
+	var tab = Tab{Id: 0, Name: "Drop ", Age: 18}
 	sql, err := sqlBuild.Insert("xx").
 		Value(&tab).String()
 	if err != nil {
