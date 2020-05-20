@@ -97,7 +97,7 @@ func (i *InsertBuild) String() (string, error) {
 	//insertColumn
 	var insertColumn string
 	if len(i.insertColumns) > 0 {
-		insertColumn = strings.Join(i.insertColumns, ",")
+		insertColumn = fmt.Sprintf("`%s`", strings.Join(i.insertColumns, "`,`"))
 	}
 	//insertValues
 	var insertValue string

@@ -2,8 +2,8 @@ package sqlBuild
 
 import (
 	"github.com/xiaohei16h/sql-build/debug"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type SelectBuild struct {
@@ -88,7 +88,28 @@ func (s *SelectBuild) String() (string, error) {
 	if len(s.columnValues) == 0 {
 		column = " *"
 	} else {
+		//buffer := bytes.Buffer{}
+		//columnLen := len(s.columnValues) - 1
+		//for index, col := range s.columnValues {
+		//	isField := true
+		//	if strings.Contains(col, " ") || strings.Contains(col, "(") {
+		//		isField = false
+		//	}
+		//	if isField {
+		//		buffer.WriteString("`")
+		//	}
+		//	buffer.WriteString(col)
+		//	if isField {
+		//		buffer.WriteString("`")
+		//	}
+		//	// last
+		//	if columnLen != index {
+		//		buffer.WriteString(",")
+		//	}
+		//}
+
 		column = " " + strings.Join(s.columnValues, ",")
+		//column = " " + buffer.String()
 	}
 	//where
 	var where string
