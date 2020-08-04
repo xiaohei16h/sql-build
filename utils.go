@@ -1,7 +1,7 @@
-
 package sqlBuild
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -208,6 +208,14 @@ func getWhereSetValues(values interface{}, rule Rule, f func(value string) strin
 
 //得到数据类型
 func GetValue(value reflect.Value, rule Rule) (string, error) {
+	toJson := func(v reflect.Value) (string, error) {
+		if txtByte, err := json.Marshal(v.Interface()); err != nil {
+			return "", err
+		} else {
+			return strings.Join([]string{"'", "'"}, Escape(string(txtByte))), nil
+		}
+	}
+
 	switch value.Kind() {
 	case reflect.Int:
 		temp := value.Int()
@@ -277,15 +285,33 @@ func GetValue(value reflect.Value, rule Rule) (string, error) {
 			}
 			return strings.Join([]string{"'", "'"}, Escape(temp)), nil
 		}
-	}
-
-	switch v := value.Interface().(type) {
-	case time.Time:
-		if v.IsZero() {
-			break
+	case reflect.Slice:
+		if value.Len() > rule.SliceLength {
+			return toJson(value)
+		}
+	case reflect.Array:
+		if value.Len() > rule.ArrayLength {
+			return toJson(value)
+		}
+	case reflect.Map:
+		if value.Len() > rule.MapLength {
+			return toJson(value)
+		}
+	case reflect.Struct:
+		if v, ok := value.Interface().(time.Time); ok {
+			if v.IsZero() {
+				break
+			}
+			return strings.Join([]string{"'", "'"}, v.Format("2006-01-02 15:04:05.000")), nil
 		}
 
-		return strings.Join([]string{"'", "'"}, v.Format("2006-01-02 15:04:05.000")), nil
+		if rule.StructForce || !reflect.DeepEqual(reflect.New(value.Type()).Elem().Interface(), value.Interface()) {
+			return toJson(value)
+		}
+	case reflect.Ptr:
+		if !value.IsNil() {
+			return GetValue(value.Elem(), rule)
+		}
 	}
 
 	return "DEFAULT", nil

@@ -2,8 +2,8 @@ package sqlBuild
 
 import (
 	"errors"
-	"reflect"
 	"github.com/xiaohei16h/sql-build/debug"
+	"reflect"
 	"strings"
 	"sync"
 )
@@ -61,6 +61,10 @@ type Rule struct {
 	Float32Value float32
 	Float64Value float64
 	StringValue  string
+	SliceLength  int
+	ArrayLength  int
+	MapLength    int
+	StructForce  bool
 }
 
 func (b *BuildCore) setTabName(tabName string) {
