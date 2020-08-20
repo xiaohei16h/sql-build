@@ -1,9 +1,9 @@
 package sqlBuild
 
 import (
-	"reflect"
 	"fmt"
 	"github.com/xiaohei16h/sql-build/debug"
+	"reflect"
 	"strings"
 	"sync"
 )
@@ -16,7 +16,7 @@ func (i *InsertBuild) Insert(table string) InsertInf {
 	i.setTabName(table)
 	return i
 }
-func (i *InsertBuild) Value(value interface{}, rules ... Rule) InsertInf {
+func (i *InsertBuild) Value(value interface{}, rules ...Rule) InsertInf {
 	val := reflect.ValueOf(value)
 	if val.Kind() != reflect.Ptr {
 		panic(fmt.Errorf("The struct paramer must be use ptr"))
@@ -28,7 +28,7 @@ func (i *InsertBuild) Value(value interface{}, rules ... Rule) InsertInf {
 	if len(rules) > 0 {
 		rule = rules[0]
 	}
-	i.value(ind, rule, )
+	i.value(ind, rule)
 	return i
 }
 func (i *InsertBuild) NoOption(noOptions ...string) InsertInf {
@@ -52,7 +52,7 @@ func (i *InsertBuild) Option(options ...string) InsertInf {
 	return i
 }
 
-func (i *InsertBuild) Values(value interface{}, rules ... Rule) InsertInf {
+func (i *InsertBuild) Values(value interface{}, rules ...Rule) InsertInf {
 	vals := reflect.Indirect(reflect.ValueOf(value))
 	if vals.Kind() != reflect.Slice {
 		panic(fmt.Errorf("The struct paramer must be use slice"))
@@ -121,7 +121,8 @@ func (i *InsertBuild) String() (string, error) {
 				continue
 			}
 
-			temp := strings.Join([]string{v, v}, " = values(")
+			vColumn := fmt.Sprintf("`%s`", v)
+			temp := strings.Join([]string{vColumn, vColumn}, " = values(")
 			orUpdates = append(orUpdates, temp)
 		}
 		orUpdate = " ON DUPLICATE KEY UPDATE " + strings.Join(orUpdates, "),") + ")"
