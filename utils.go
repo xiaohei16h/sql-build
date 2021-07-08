@@ -217,6 +217,12 @@ func GetValue(value reflect.Value, rule Rule) (string, error) {
 	}
 
 	switch value.Kind() {
+	case reflect.Bool:
+		if value.Bool() {
+			return "1", nil
+		} else {
+			return "0", nil
+		}
 	case reflect.Int:
 		temp := value.Int()
 		if int(temp) > rule.IntValue {
