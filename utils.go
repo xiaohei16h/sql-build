@@ -1,6 +1,7 @@
 package sqlBuild
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -206,12 +207,21 @@ func getWhereSetValues(values interface{}, rule Rule, f func(value string) strin
 	return
 }
 
+type JsonInterface interface {
+	TrimQuote(jsonStr []byte) bool
+}
+
 //得到数据类型
 func GetValue(value reflect.Value, rule Rule) (string, error) {
 	toJson := func(v reflect.Value) (string, error) {
 		if txtByte, err := json.Marshal(v.Interface()); err != nil {
 			return "", err
 		} else {
+			if jsonInterface, ok := v.Interface().(JsonInterface); ok {
+				if jsonInterface.TrimQuote(txtByte) {
+					txtByte = bytes.Trim(txtByte, `"`)
+				}
+			}
 			return strings.Join([]string{"'", "'"}, Escape(string(txtByte))), nil
 		}
 	}
