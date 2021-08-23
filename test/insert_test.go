@@ -49,13 +49,13 @@ type Tab struct {
 	Id   int       `insert:"id;auto;mycat:next value for MYCATSEQ_AGENT"`
 	Name string    `insert:"name"`
 	Age  int       `insert:"age"`
-	Json string    `json:"json"`
+	Json string    `json:"json,string"`
 	Time time.Time `json:"time"`
 	StartTime JsonTime `json:"start_time"`
 }
 
 func TestValue(t *testing.T) {
-	var tab = Tab{Id: 0, Name: "Drop ", Age: 18}
+	var tab = Tab{Id: 0, Name: "Drop ", Age: 18, Json: "cc"}
 	sql, err := sqlBuild.Insert("xx").
 		Value(&tab).String()
 	if err != nil {

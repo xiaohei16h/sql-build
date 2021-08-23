@@ -303,6 +303,9 @@ func (b *BuildCore) setValueColumns(ty reflect.Type, tag string) {
 	for i := 0; i < ty.NumField(); i++ {
 		name := ty.Field(i).Tag.Get(tag)
 		if name != "" && b.isOptions(name) && b.isNoOptions(name) {
+			if tag == "json" {
+				name = strings.Split(name, ",")[0]
+			}
 			columnTags := strings.Split(name, ";")
 			var myCat, columnTag string
 			var auto bool
