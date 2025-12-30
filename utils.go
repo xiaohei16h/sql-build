@@ -211,7 +211,7 @@ type JsonInterface interface {
 	TrimQuote(jsonStr []byte) bool
 }
 
-//得到数据类型
+// 得到数据类型
 func GetValue(value reflect.Value, rule Rule) (string, error) {
 	toJson := func(v reflect.Value) (string, error) {
 		if txtByte, err := json.Marshal(v.Interface()); err != nil {
@@ -324,6 +324,8 @@ func GetValue(value reflect.Value, rule Rule) (string, error) {
 		if rule.StructForce || !reflect.DeepEqual(reflect.New(value.Type()).Elem().Interface(), value.Interface()) {
 			return toJson(value)
 		}
+	case reflect.Interface:
+		return toJson(value)
 	case reflect.Ptr:
 		if !value.IsNil() {
 			return GetValue(value.Elem(), rule)
